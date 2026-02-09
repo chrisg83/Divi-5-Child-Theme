@@ -1,4 +1,4 @@
-# Divi 5 Subtheme Starter
+# Divi 5 Subtheme Framework
 
 This is a clean child theme scaffold for Divi 5 with Tailwind CSS.
 
@@ -13,15 +13,15 @@ Edit `style.css` and set:
 
 ## 2. Install
 
-Copy `divi5-subtheme-starter` to:
+Copy `divi-5-subtheme-framework` to:
 
-`wp-content/themes/divi5-subtheme-starter`
+`wp-content/themes/divi-5-subtheme-framework`
 
 ## 3. Activate
 
 In WordPress admin:
 
-`Appearance -> Themes -> Divi 5 Subtheme Starter -> Activate`
+`Appearance -> Themes -> Divi 5 Subtheme Framework -> Activate`
 
 ## 4. Customize
 

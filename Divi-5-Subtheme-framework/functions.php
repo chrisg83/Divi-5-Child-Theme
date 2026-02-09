@@ -1,6 +1,6 @@
 <?php
 /**
- * Divi 5 Subtheme Starter functions and definitions.
+ * Divi 5 Subtheme Framework functions and definitions.
  */
 
 if (!defined('ABSPATH')) {
@@ -8,9 +8,30 @@ if (!defined('ABSPATH')) {
 }
 
 /**
+ * Request higher PHP memory for this theme context.
+ *
+ * Note: host/server limits can still override these values.
+ */
+function divi5_subtheme_framework_set_memory_limit(): void
+{
+    if (!defined('WP_MEMORY_LIMIT')) {
+        define('WP_MEMORY_LIMIT', '512M');
+    }
+
+    if (!defined('WP_MAX_MEMORY_LIMIT')) {
+        define('WP_MAX_MEMORY_LIMIT', '512M');
+    }
+
+    if (function_exists('ini_set')) {
+        @ini_set('memory_limit', '512M');
+    }
+}
+divi5_subtheme_framework_set_memory_limit();
+
+/**
  * Default design token values for the theme.
  */
-function divi5_subtheme_starter_default_tokens(): array
+function divi5_subtheme_framework_default_tokens(): array
 {
     return [
         'brand_primary' => '#146ef5',
@@ -23,7 +44,7 @@ function divi5_subtheme_starter_default_tokens(): array
 /**
  * Sanitize integer token fields with bounds.
  */
-function divi5_subtheme_starter_sanitize_int_range($value, int $min, int $max): int
+function divi5_subtheme_framework_sanitize_int_range($value, int $min, int $max): int
 {
     $value = absint($value);
 
@@ -41,9 +62,9 @@ function divi5_subtheme_starter_sanitize_int_range($value, int $min, int $max): 
 /**
  * Resolve tokens from Customizer with safe fallbacks.
  */
-function divi5_subtheme_starter_get_tokens(): array
+function divi5_subtheme_framework_get_tokens(): array
 {
-    $defaults = divi5_subtheme_starter_default_tokens();
+    $defaults = divi5_subtheme_framework_default_tokens();
 
     $brand_primary = sanitize_hex_color((string) get_theme_mod('d5ss_brand_primary', $defaults['brand_primary']));
     $text_primary = sanitize_hex_color((string) get_theme_mod('d5ss_text_primary', $defaults['text_primary']));
@@ -51,17 +72,17 @@ function divi5_subtheme_starter_get_tokens(): array
     return [
         'brand_primary' => $brand_primary ?: $defaults['brand_primary'],
         'text_primary' => $text_primary ?: $defaults['text_primary'],
-        'radius_md' => divi5_subtheme_starter_sanitize_int_range(get_theme_mod('d5ss_radius_md', $defaults['radius_md']), 0, 40),
-        'section_space' => divi5_subtheme_starter_sanitize_int_range(get_theme_mod('d5ss_section_space', $defaults['section_space']), 24, 160),
+        'radius_md' => divi5_subtheme_framework_sanitize_int_range(get_theme_mod('d5ss_radius_md', $defaults['radius_md']), 0, 40),
+        'section_space' => divi5_subtheme_framework_sanitize_int_range(get_theme_mod('d5ss_section_space', $defaults['section_space']), 24, 160),
     ];
 }
 
 /**
  * Build CSS variable declarations from theme tokens.
  */
-function divi5_subtheme_starter_tokens_css(): string
+function divi5_subtheme_framework_tokens_css(): string
 {
-    $tokens = divi5_subtheme_starter_get_tokens();
+    $tokens = divi5_subtheme_framework_get_tokens();
 
     return sprintf(
         ':root{--d5ss-brand-primary:%1$s;--d5ss-text-primary:%2$s;--d5ss-radius-md:%3$dpx;--d5ss-section-space:%4$dpx;}',
@@ -75,14 +96,14 @@ function divi5_subtheme_starter_tokens_css(): string
 /**
  * Register Customizer controls for design tokens.
  */
-function divi5_subtheme_starter_register_customizer($wp_customize): void
+function divi5_subtheme_framework_register_customizer($wp_customize): void
 {
-    $defaults = divi5_subtheme_starter_default_tokens();
+    $defaults = divi5_subtheme_framework_default_tokens();
 
     $wp_customize->add_section(
         'd5ss_design_tokens',
         [
-            'title' => __('Divi 5 Subtheme Tokens', 'divi5-subtheme-starter'),
+            'title' => __('Divi 5 Subtheme Tokens', 'divi-5-subtheme-framework'),
             'priority' => 30,
         ]
     );
@@ -101,7 +122,7 @@ function divi5_subtheme_starter_register_customizer($wp_customize): void
             $wp_customize,
             'd5ss_brand_primary_control',
             [
-                'label' => __('Brand Primary', 'divi5-subtheme-starter'),
+                'label' => __('Brand Primary', 'divi-5-subtheme-framework'),
                 'section' => 'd5ss_design_tokens',
                 'settings' => 'd5ss_brand_primary',
             ]
@@ -122,7 +143,7 @@ function divi5_subtheme_starter_register_customizer($wp_customize): void
             $wp_customize,
             'd5ss_text_primary_control',
             [
-                'label' => __('Text Primary', 'divi5-subtheme-starter'),
+                'label' => __('Text Primary', 'divi-5-subtheme-framework'),
                 'section' => 'd5ss_design_tokens',
                 'settings' => 'd5ss_text_primary',
             ]
@@ -134,7 +155,7 @@ function divi5_subtheme_starter_register_customizer($wp_customize): void
         [
             'default' => $defaults['radius_md'],
             'sanitize_callback' => static function ($value): int {
-                return divi5_subtheme_starter_sanitize_int_range($value, 0, 40);
+                return divi5_subtheme_framework_sanitize_int_range($value, 0, 40);
             },
             'transport' => 'refresh',
         ]
@@ -143,7 +164,7 @@ function divi5_subtheme_starter_register_customizer($wp_customize): void
     $wp_customize->add_control(
         'd5ss_radius_md_control',
         [
-            'label' => __('Base Radius (px)', 'divi5-subtheme-starter'),
+            'label' => __('Base Radius (px)', 'divi-5-subtheme-framework'),
             'section' => 'd5ss_design_tokens',
             'settings' => 'd5ss_radius_md',
             'type' => 'number',
@@ -160,7 +181,7 @@ function divi5_subtheme_starter_register_customizer($wp_customize): void
         [
             'default' => $defaults['section_space'],
             'sanitize_callback' => static function ($value): int {
-                return divi5_subtheme_starter_sanitize_int_range($value, 24, 160);
+                return divi5_subtheme_framework_sanitize_int_range($value, 24, 160);
             },
             'transport' => 'refresh',
         ]
@@ -169,7 +190,7 @@ function divi5_subtheme_starter_register_customizer($wp_customize): void
     $wp_customize->add_control(
         'd5ss_section_space_control',
         [
-            'label' => __('Section Spacing (px)', 'divi5-subtheme-starter'),
+            'label' => __('Section Spacing (px)', 'divi-5-subtheme-framework'),
             'section' => 'd5ss_design_tokens',
             'settings' => 'd5ss_section_space',
             'type' => 'number',
@@ -181,12 +202,12 @@ function divi5_subtheme_starter_register_customizer($wp_customize): void
         ]
     );
 }
-add_action('customize_register', 'divi5_subtheme_starter_register_customizer');
+add_action('customize_register', 'divi5_subtheme_framework_register_customizer');
 
 /**
  * Enqueue parent and child theme styles.
  */
-function divi5_subtheme_starter_enqueue_assets(): void
+function divi5_subtheme_framework_enqueue_assets(): void
 {
     $theme = wp_get_theme();
     $child_css_relative = '/assets/css/main.css';
@@ -201,19 +222,19 @@ function divi5_subtheme_starter_enqueue_assets(): void
     );
 
     wp_enqueue_style(
-        'divi5-subtheme-starter-main',
+        'divi-5-subtheme-framework-main',
         get_stylesheet_directory_uri() . $child_css_relative,
         ['divi-parent-style'],
         $child_css_version
     );
-    wp_add_inline_style('divi5-subtheme-starter-main', divi5_subtheme_starter_tokens_css());
+    wp_add_inline_style('divi-5-subtheme-framework-main', divi5_subtheme_framework_tokens_css());
 
     wp_enqueue_script(
-        'divi5-subtheme-starter-main',
+        'divi-5-subtheme-framework-main',
         get_stylesheet_directory_uri() . '/assets/js/main.js',
         [],
         $theme->get('Version'),
         true
     );
 }
-add_action('wp_enqueue_scripts', 'divi5_subtheme_starter_enqueue_assets', 20);
+add_action('wp_enqueue_scripts', 'divi5_subtheme_framework_enqueue_assets', 20);
