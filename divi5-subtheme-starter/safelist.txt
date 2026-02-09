@@ -1,0 +1,10 @@
+# Add classes used only in Divi Builder content so Tailwind includes them.
+# One class per line, e.g.:
+# tw-text-4xl
+# md:tw-grid
+# lg:tw-grid-cols-3
+tw-btn
+tw-btn-primary
+tw-card
+tw-section-pad
+tw-prose-block

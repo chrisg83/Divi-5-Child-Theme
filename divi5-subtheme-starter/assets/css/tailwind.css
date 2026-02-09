@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --d5ss-brand-primary: #146ef5;
+    --d5ss-text-primary: #172b4d;
+    --d5ss-radius-md: 12px;
+    --d5ss-section-space: 80px;
+  }
+
+  body {
+    color: var(--d5ss-text-primary);
+  }
+
+  a {
+    color: var(--d5ss-brand-primary);
+  }
+}
+
+@layer components {
+  .tw-btn {
+    @apply tw-inline-flex tw-items-center tw-justify-center tw-gap-2 tw-rounded-token tw-px-5 tw-py-2.5 tw-font-semibold tw-transition-colors tw-duration-200;
+  }
+
+  .tw-btn-primary {
+    @apply tw-btn tw-bg-brand-primary tw-text-white hover:tw-opacity-90;
+  }
+
+  .tw-card {
+    @apply tw-rounded-token tw-bg-white tw-p-6 tw-shadow-card;
+  }
+
+  .tw-section-pad {
+    padding-top: var(--d5ss-section-space);
+    padding-bottom: var(--d5ss-section-space);
+  }
+
+  .tw-prose-block {
+    @apply tw-max-w-3xl tw-leading-7;
+  }
+}
+
+@layer utilities {
+  .tw-flow > * + * {
+    @apply tw-mt-4;
+  }
+}
