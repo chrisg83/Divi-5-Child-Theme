@@ -47,7 +47,7 @@ function divi5_subtheme_framework_support_details(): array
 /**
  * Render dashboard support panel content.
  */
-function divi5_subtheme_framework_render_support_widget(): void
+function divi5_subtheme_framework_render_support_widget(bool $show_logo = true): void
 {
     $theme = wp_get_theme();
     $details = divi5_subtheme_framework_support_details();
@@ -57,7 +57,7 @@ function divi5_subtheme_framework_render_support_widget(): void
         rawurlencode($details['email_subject'])
     );
     ?>
-    <?php if (!empty($details['logo_url'])) : ?>
+    <?php if ($show_logo && !empty($details['logo_url'])) : ?>
         <p>
             <img
                 class="d5sf-support-logo"
@@ -65,7 +65,7 @@ function divi5_subtheme_framework_render_support_widget(): void
                 alt="<?php esc_attr_e('Support Logo', 'divi-5-subtheme-framework'); ?>"
             />
         </p>
-    <?php else : ?>
+    <?php elseif ($show_logo) : ?>
         <p><em><?php esc_html_e('Add your support logo URL in divi5_subtheme_framework_support_details().', 'divi-5-subtheme-framework'); ?></em></p>
     <?php endif; ?>
 
@@ -358,6 +358,7 @@ function divi5_subtheme_framework_render_theme_settings_overview(): void
     }
     ?>
     <div class="wrap">
+        <?php divi5_subtheme_framework_render_theme_settings_logo(); ?>
         <h1><?php esc_html_e('Theme Settings', 'divi-5-subtheme-framework'); ?></h1>
         <p><?php esc_html_e('This area is the control center for custom theme modifications and advanced settings.', 'divi-5-subtheme-framework'); ?></p>
 
@@ -371,7 +372,49 @@ function divi5_subtheme_framework_render_theme_settings_overview(): void
                 </a>
             </p>
         </div>
+        <?php divi5_subtheme_framework_render_theme_settings_copyright(); ?>
     </div>
+    <?php
+}
+
+/**
+ * Render a shared copyright line for Theme Settings pages.
+ */
+function divi5_subtheme_framework_render_theme_settings_copyright(): void
+{
+    ?>
+    <p style="margin-top:16px;color:#646970;">
+        <?php
+        echo esc_html(
+            sprintf(
+                /* translators: %s is the current year. */
+                __('Copyright %s Blue Helix Design. All rights reserved.', 'divi-5-subtheme-framework'),
+                gmdate('Y')
+            )
+        );
+        ?>
+    </p>
+    <?php
+}
+
+/**
+ * Render a shared logo block for Theme Settings pages.
+ */
+function divi5_subtheme_framework_render_theme_settings_logo(): void
+{
+    $details = divi5_subtheme_framework_support_details();
+
+    if (empty($details['logo_url'])) {
+        return;
+    }
+    ?>
+    <p>
+        <img
+            class="d5sf-support-logo"
+            src="<?php echo esc_url($details['logo_url']); ?>"
+            alt="<?php esc_attr_e('Theme Logo', 'divi-5-subtheme-framework'); ?>"
+        />
+    </p>
     <?php
 }
 
@@ -477,6 +520,38 @@ function divi5_subtheme_framework_add_performance_subpage(array $subpages): arra
 add_filter('divi5_subtheme_framework_theme_settings_subpages', 'divi5_subtheme_framework_add_performance_subpage');
 
 /**
+ * Add Support submenu to Theme Settings.
+ */
+function divi5_subtheme_framework_add_support_subpage(array $subpages): array
+{
+    $subpages[] = [
+        'page_title' => __('Theme Support', 'divi-5-subtheme-framework'),
+        'menu_title' => __('Support', 'divi-5-subtheme-framework'),
+        'menu_slug' => 'd5sf-theme-settings-support',
+        'callback' => 'divi5_subtheme_framework_render_theme_settings_support',
+    ];
+
+    return $subpages;
+}
+add_filter('divi5_subtheme_framework_theme_settings_subpages', 'divi5_subtheme_framework_add_support_subpage');
+
+/**
+ * Add CSS Help submenu to Theme Settings.
+ */
+function divi5_subtheme_framework_add_css_help_subpage(array $subpages): array
+{
+    $subpages[] = [
+        'page_title' => __('CSS Help', 'divi-5-subtheme-framework'),
+        'menu_title' => __('CSS Help', 'divi-5-subtheme-framework'),
+        'menu_slug' => 'd5sf-theme-settings-css-help',
+        'callback' => 'divi5_subtheme_framework_render_theme_settings_css_help',
+    ];
+
+    return $subpages;
+}
+add_filter('divi5_subtheme_framework_theme_settings_subpages', 'divi5_subtheme_framework_add_css_help_subpage');
+
+/**
  * Register settings and fields for the performance page.
  */
 function divi5_subtheme_framework_register_performance_settings(): void
@@ -569,6 +644,7 @@ function divi5_subtheme_framework_render_theme_settings_performance(): void
     }
     ?>
     <div class="wrap">
+        <?php divi5_subtheme_framework_render_theme_settings_logo(); ?>
         <h1><?php esc_html_e('Performance Settings', 'divi-5-subtheme-framework'); ?></h1>
         <form method="post" action="options.php">
             <?php
@@ -577,6 +653,134 @@ function divi5_subtheme_framework_render_theme_settings_performance(): void
             submit_button(__('Save Performance Settings', 'divi-5-subtheme-framework'));
             ?>
         </form>
+        <?php divi5_subtheme_framework_render_theme_settings_copyright(); ?>
+    </div>
+    <?php
+}
+
+/**
+ * Render the Theme Settings > Support page.
+ */
+function divi5_subtheme_framework_render_theme_settings_support(): void
+{
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    ?>
+    <div class="wrap">
+        <?php divi5_subtheme_framework_render_theme_settings_logo(); ?>
+        <h1><?php esc_html_e('Theme Support', 'divi-5-subtheme-framework'); ?></h1>
+        <?php divi5_subtheme_framework_render_support_widget(false); ?>
+        <?php divi5_subtheme_framework_render_theme_settings_copyright(); ?>
+    </div>
+    <?php
+}
+
+/**
+ * Render a read-only code preview for a theme file.
+ */
+function divi5_subtheme_framework_render_theme_file_preview(string $relative_path): void
+{
+    $relative_path = ltrim($relative_path, '/');
+    $candidate_paths = [
+        trailingslashit(get_stylesheet_directory()) . $relative_path,
+        trailingslashit(get_template_directory()) . $relative_path,
+    ];
+    $full_path = '';
+
+    foreach ($candidate_paths as $candidate_path) {
+        if (file_exists($candidate_path)) {
+            $full_path = $candidate_path;
+            break;
+        }
+    }
+
+    if ('' === $full_path) {
+        printf(
+            '<p><em>%s</em></p>',
+            esc_html(
+                sprintf(
+                    __('File not found: %1$s. This file may not be included in the installed theme package.', 'divi-5-subtheme-framework'),
+                    $relative_path
+                )
+            )
+        );
+
+        return;
+    }
+
+    $content = file_get_contents($full_path);
+
+    if (false === $content) {
+        printf(
+            '<p><em>%s</em></p>',
+            esc_html(sprintf(__('Could not read file: %s', 'divi-5-subtheme-framework'), $relative_path))
+        );
+
+        return;
+    }
+    ?>
+    <pre style="max-width: 1000px; overflow:auto; background:#f6f7f7; padding:12px; border:1px solid #dcdcde;"><code><?php echo esc_html($content); ?></code></pre>
+    <?php
+}
+
+/**
+ * Render the Theme Settings > CSS Help page.
+ */
+function divi5_subtheme_framework_render_theme_settings_css_help(): void
+{
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    ?>
+    <div class="wrap">
+        <?php divi5_subtheme_framework_render_theme_settings_logo(); ?>
+        <h1><?php esc_html_e('CSS Help (Tailwind)', 'divi-5-subtheme-framework'); ?></h1>
+        <p><?php esc_html_e('This theme uses Tailwind CSS with a Divi-safe setup so you can build quickly without clashing with Divi core styles.', 'divi-5-subtheme-framework'); ?></p>
+
+        <div class="card" style="max-width: 1000px;">
+            <h2><?php esc_html_e('Why This Setup Is Powerful', 'divi-5-subtheme-framework'); ?></h2>
+            <ul style="list-style: disc; margin-left: 20px;">
+                <li><?php esc_html_e('All utilities use the tw- prefix to avoid collisions with Divi classes.', 'divi-5-subtheme-framework'); ?></li>
+                <li><?php esc_html_e('Preflight is disabled so Tailwind does not reset Divi base styles.', 'divi-5-subtheme-framework'); ?></li>
+                <li><?php esc_html_e('Design tokens flow from the Customizer into CSS variables and Tailwind utilities.', 'divi-5-subtheme-framework'); ?></li>
+                <li><?php esc_html_e('Safelist support keeps classes generated for dynamic Divi Builder content.', 'divi-5-subtheme-framework'); ?></li>
+            </ul>
+
+            <h2><?php esc_html_e('Build Commands', 'divi-5-subtheme-framework'); ?></h2>
+            <pre style="max-width: 1000px; overflow:auto; background:#f6f7f7; padding:12px; border:1px solid #dcdcde;"><code>npm install
+npm run build:css
+npm run watch:css</code></pre>
+
+            <h2><?php esc_html_e('Preset Usage Examples', 'divi-5-subtheme-framework'); ?></h2>
+            <p><?php esc_html_e('Use these token-driven classes in templates/modules:', 'divi-5-subtheme-framework'); ?></p>
+            <pre style="max-width: 1000px; overflow:auto; background:#f6f7f7; padding:12px; border:1px solid #dcdcde;"><code>&lt;section class="tw-p-section"&gt;
+  &lt;div class="tw-card tw-rounded-token tw-shadow-card"&gt;
+    &lt;h2 class="tw-text-brand-text"&gt;Heading&lt;/h2&gt;
+    &lt;a class="tw-bg-brand-primary tw-text-white tw-rounded-token tw-px-4 tw-py-2"&gt;Button&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</code></pre>
+
+            <h2><?php esc_html_e('Official Tailwind Docs', 'divi-5-subtheme-framework'); ?></h2>
+            <ul style="list-style: disc; margin-left: 20px;">
+                <li><a href="<?php echo esc_url('https://tailwindcss.com/docs/installation'); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Installation', 'divi-5-subtheme-framework'); ?></a></li>
+                <li><a href="<?php echo esc_url('https://tailwindcss.com/docs/configuration'); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Configuration', 'divi-5-subtheme-framework'); ?></a></li>
+                <li><a href="<?php echo esc_url('https://tailwindcss.com/docs/theme'); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Theme Variables', 'divi-5-subtheme-framework'); ?></a></li>
+                <li><a href="<?php echo esc_url('https://tailwindcss.com/docs/content-configuration'); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Content & Safelisting', 'divi-5-subtheme-framework'); ?></a></li>
+                <li><a href="<?php echo esc_url('https://tailwindcss.com/docs/functions-and-directives'); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Directives (@tailwind, @apply, @layer)', 'divi-5-subtheme-framework'); ?></a></li>
+            </ul>
+        </div>
+
+        <h2><?php esc_html_e('Current tailwind.config.js', 'divi-5-subtheme-framework'); ?></h2>
+        <?php divi5_subtheme_framework_render_theme_file_preview('tailwind.config.js'); ?>
+
+        <h2><?php esc_html_e('Current tailwind.preset.js', 'divi-5-subtheme-framework'); ?></h2>
+        <?php divi5_subtheme_framework_render_theme_file_preview('tailwind.preset.js'); ?>
+
+        <h2><?php esc_html_e('Current safelist.txt', 'divi-5-subtheme-framework'); ?></h2>
+        <?php divi5_subtheme_framework_render_theme_file_preview('safelist.txt'); ?>
+
+        <?php divi5_subtheme_framework_render_theme_settings_copyright(); ?>
     </div>
     <?php
 }
