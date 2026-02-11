@@ -53,6 +53,7 @@ Watch while developing:
 - Add classes used only in Divi Builder content to `safelist.txt`.
 - Theme token controls are available in `Appearance -> Customize -> Divi 5 Subtheme Tokens`.
 - CSS layers are organized in `assets/css/tailwind.css` as `base`, `components`, and `utilities`.
+- A support panel appears on the WordPress Dashboard. Edit its links/email in `functions.php` under `divi5_subtheme_framework_support_details()`.
 
 ## Included utility components
 
